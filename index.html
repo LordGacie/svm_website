@@ -1,37 +1,141 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark-mode">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Version Comparison</title>
+    <title>Better Dappled Forest Datapack Showcase</title>
+    
+    <link rel="icon" type="image/png" href="data/icon.png">
+    
     <style>
         * { box-sizing: border-box; }
+        
+        /* Base Themes (Driven by Python Config) */
+        html.dark-mode body {
+            background-color: #121214;
+            color: #b3b3b3;
+        }
+        html.dark-mode h2, html.dark-mode h3 {
+            color: #e0e0e0;
+        }
+        html.dark-mode .frame-wrapper {
+            background-color: #1a1a1e;
+            border: 1px solid #2a2a30;
+        }
+        html.dark-mode .frame-wrapper:hover {
+            background-color: #24242a;
+            border-color: #3a3a45;
+        }
+        
+        html.light-mode body {
+            background-color: #f4f4f9;
+            color: #444444;
+        }
+        html.light-mode h2, html.light-mode h3 {
+            color: #111111;
+        }
+        html.light-mode .frame-wrapper {
+            background-color: #ffffff;
+            border: 1px solid #e0e0e6;
+        }
+        html.light-mode .frame-wrapper:hover {
+            background-color: #fafafc;
+            border-color: #5fab49;
+        }
+
         body {
             font-family: Arial, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            background-color: #f4f4f9;
             margin: 0;
-            padding: 20px;
+            padding: 40px 20px;
+            transition: background-color 0.3s, color 0.3s;
         }
-        .controls { margin-bottom: 20px; }
-        select {
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            max-width: 860px;
+            width: 100%;
+            margin-bottom: 40px;
+            gap: 20px;
+        }
+
+        .header-icon {
+            width: 64px;
+            height: 64px;
+            object-fit: contain;
+            border-radius: 4px;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        .header-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-text h2 {
+            margin: 0 0 5px 0;
+        }
+
+        .header-text p {
+            margin: 0;
+        }
+
+        .theme-toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
             padding: 10px 15px;
-            font-size: 16px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
+            font-size: 14px;
+            font-weight: bold;
             cursor: pointer;
+            border-radius: 20px;
+            border: 1px solid #444;
+            background-color: #222;
+            color: #fff;
+            z-index: 100;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: background-color 0.2s, color 0.2s;
         }
+        html.light-mode .theme-toggle-btn {
+            background-color: #fff;
+            color: #222;
+            border: 1px solid #ccc;
+        }
+
+        .comparison-block {
+            margin-bottom: 50px;
+            width: 100%;
+            max-width: 860px;
+            text-align: center;
+        }
+
+        .comparison-block h3 {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            text-align: left;
+            padding-left: 24px;
+        }
+
+        .frame-wrapper {
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+            transition: background-color 0.25s ease, border-color 0.25s ease;
+        }
+
         .img-comp-container {
             position: relative;
             width: 100%;
-            max-width: 800px;
-            aspect-ratio: 16 / 9; /* Sets a responsive widescreen box. Adjust if your images are 4:3! */
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            aspect-ratio: 16 / 9;
             overflow: hidden;
-            background-color: #eee;
+            background-color: #000;
+            border-radius: 8px;
         }
+
         .img-comp-img {
             position: absolute;
             width: auto;
@@ -39,84 +143,157 @@
             overflow: hidden;
             user-select: none;
         }
+
         .img-comp-img img {
             display: block;
             vertical-align: middle;
-            width: 800px; /* Must match max-width of container */
+            width: 800px; 
             max-width: none;
             height: 100%;
-            object-fit: contain;
+            object-fit: cover; 
+            transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+            transform: scale(1);
         }
+
+        .frame-wrapper:hover .img-comp-img img {
+            transform: scale(1.03);
+        }
+
         .img-comp-slider {
             position: absolute;
             z-index: 9;
             cursor: ew-resize;
             width: 40px;
             height: 40px;
-            background-color: #2196F3;
-            opacity: 0.9;
+            background-color: #5fab49;
+            opacity: 0.85;
             border-radius: 50%;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 6px rgba(0,0,0,0.3);
+            transform: translate(-50%, -50%) scale(1);
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: bold;
             font-size: 18px;
+            user-select: none;
+            transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1), 
+                        background-color 0.2s ease, 
+                        opacity 0.2s ease;
+        }
+
+        .frame-wrapper:hover .img-comp-slider {
+            transform: translate(-50%, -50%) scale(1.15);
+            background-color: #98bd68;
+            opacity: 1;
+        }
+
+        .img-comp-slider:active, .frame-wrapper:hover .img-comp-slider:active {
+            transform: translate(-50%, -50%) scale(0.92);
+            background-color: #507d39;
+            box-shadow: 0 0 5px rgba(0,0,0,0.6);
         }
     </style>
 </head>
 <body>
 
-    <h2>Image Version Comparison</h2>
-    <p>Select a date slice, then drag the blue slider to compare Version 1 (Left) and Version 2 (Right).</p>
+    <button class="theme-toggle-btn" onclick="toggleTheme()">☀️ Light Mode</button>
 
-    <div class="controls">
-        <label for="dateSelect"><strong>Select Dataset:</strong> </label>
-        <select id="dateSelect" onchange="changeDate()">
-            <option value="pair0" selected>2026-06-24_03.04.36</option>
-            <option value="pair1" >2026-06-24_03.06.00</option>
-            <option value="pair2" >2026-06-24_03.06.19</option>
-            <option value="pair3" >2026-06-24_03.06.35</option>
-            <option value="pair4" >2026-06-24_03.07.04</option>
-        </select>
-    </div>
-
-    <div class="img-comp-container">
-        <div class="img-comp-img">
-            <img id="v2-img" src="data/2/2026-06-24_03.14.17.png" alt="Version 2">
-        </div>
-        <div class="img-comp-img img-comp-overlay">
-            <img id="v1-img" src="data/1/2026-06-24_03.04.36.png" alt="Version 1">
+    <div class="header-container">
+        <img class="header-icon" src="data/icon.png" alt="Icon" onerror="this.style.display='none';">
+        <div class="header-text">
+            <h2>Better Dappled Forest Datapack</h2>
+            <p>Drag each blue slider to compare Vanilla (Left) and Datapack (Right).</p>
         </div>
     </div>
+
+
+    <div class="comparison-block">
+        <h3>Image #1</h3>
+        <div class="frame-wrapper">
+            <div class="img-comp-container">
+                <div class="img-comp-img">
+                    <img src="data/2/2026-06-24_21.22.33.png" alt="Datapack">
+                </div>
+                <div class="img-comp-img img-comp-overlay">
+                    <img src="data/1/2026-06-24_21.21.13.png" alt="Vanilla">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="comparison-block">
+        <h3>Image #2</h3>
+        <div class="frame-wrapper">
+            <div class="img-comp-container">
+                <div class="img-comp-img">
+                    <img src="data/2/2026-06-24_21.22.39.png" alt="Datapack">
+                </div>
+                <div class="img-comp-img img-comp-overlay">
+                    <img src="data/1/2026-06-24_21.21.17.png" alt="Vanilla">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="comparison-block">
+        <h3>Image #3</h3>
+        <div class="frame-wrapper">
+            <div class="img-comp-container">
+                <div class="img-comp-img">
+                    <img src="data/2/2026-06-24_21.22.44.png" alt="Datapack">
+                </div>
+                <div class="img-comp-img img-comp-overlay">
+                    <img src="data/1/2026-06-24_21.21.20.png" alt="Vanilla">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="comparison-block">
+        <h3>Image #4</h3>
+        <div class="frame-wrapper">
+            <div class="img-comp-container">
+                <div class="img-comp-img">
+                    <img src="data/2/2026-06-24_21.22.50.png" alt="Datapack">
+                </div>
+                <div class="img-comp-img img-comp-overlay">
+                    <img src="data/1/2026-06-24_21.21.27.png" alt="Vanilla">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="comparison-block">
+        <h3>Image #5</h3>
+        <div class="frame-wrapper">
+            <div class="img-comp-container">
+                <div class="img-comp-img">
+                    <img src="data/2/2026-06-24_21.22.57.png" alt="Datapack">
+                </div>
+                <div class="img-comp-img img-comp-overlay">
+                    <img src="data/1/2026-06-24_21.21.33.png" alt="Vanilla">
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 <script>
-    const imagePairs = {
-        "pair0": { v1: "data/1/2026-06-24_03.04.36.png", v2: "data/2/2026-06-24_03.14.17.png" },
-        "pair1": { v1: "data/1/2026-06-24_03.06.00.png", v2: "data/2/2026-06-24_03.14.21.png" },
-        "pair2": { v1: "data/1/2026-06-24_03.06.19.png", v2: "data/2/2026-06-24_03.14.25.png" },
-        "pair3": { v1: "data/1/2026-06-24_03.06.35.png", v2: "data/2/2026-06-24_03.14.30.png" },
-        "pair4": { v1: "data/1/2026-06-24_03.07.04.png", v2: "data/2/2026-06-24_03.14.36.png" },
-    };
-
-    function changeDate() {
-        const selectedDate = document.getElementById("dateSelect").value;
-        
-        document.getElementById("v1-img").src = imagePairs[selectedDate].v1;
-        document.getElementById("v2-img").src = imagePairs[selectedDate].v2;
-        
-        // Reset slider to center
-        const overlay = document.querySelector(".img-comp-overlay");
-        const slider = document.querySelector(".img-comp-slider");
-        const container = document.querySelector(".img-comp-container");
-        
-        let w = container.offsetWidth;
-        overlay.style.width = (w / 2) + "px";
-        if(slider) slider.style.left = (w / 2) + "px";
+    function toggleTheme() {
+        const html = document.documentElement;
+        const btn = document.querySelector('.theme-toggle-btn');
+        if (html.classList.contains('dark-mode')) {
+            html.classList.remove('dark-mode');
+            html.classList.add('light-mode');
+            btn.innerHTML = "🌙 Dark Mode";
+        } else {
+            html.classList.remove('light-mode');
+            html.classList.add('dark-mode');
+            btn.innerHTML = "☀️ Light Mode";
+        }
     }
 
     function initComparisons() {
@@ -128,24 +305,27 @@
         function compareImages(img) {
             let slider, clicked = 0, w, h;
             
-            // Adjust overlay image baseline match to full container width
             const updateDimensions = () => {
                 w = img.parentElement.offsetWidth;
                 h = img.parentElement.offsetHeight;
-                img.querySelector("img").style.width = w + "px";
-                img.parentElement.querySelector("img").style.width = w + "px";
+                
+                const internalImages = img.parentElement.querySelectorAll("img");
+                internalImages.forEach(image => {
+                    image.style.width = w + "px";
+                });
+                
                 img.style.width = (w / 2) + "px";
+                if(slider) slider.style.left = (w / 2) + "px";
             };
-            
-            updateDimensions();
             
             slider = document.createElement("DIV");
             slider.setAttribute("class", "img-comp-slider");
             slider.innerHTML = "↔";
             img.parentElement.insertBefore(slider, img);
             
+            updateDimensions();
+            
             slider.style.top = (h / 2) - (slider.offsetHeight / 2) + "px";
-            slider.style.left = (w / 2) - (slider.offsetWidth / 2) + "px";
             
             slider.addEventListener("mousedown", slideReady);
             window.addEventListener("mouseup", slideFinish);
